@@ -102,18 +102,9 @@ public class IOUtilsWriteTestCase extends FileBasedTestCase {
     }
 
     @Test
-    public void testWrite_byteArrayToWriter_nullData() throws Exception {
-        final ByteArrayOutputStream baout = new ByteArrayOutputStream();
-        @SuppressWarnings("resource") // deliberately not closed
-        final YellOnFlushAndCloseOutputStream out = new YellOnFlushAndCloseOutputStream(baout, true, true);
-        final Writer writer = new OutputStreamWriter(baout, "US-ASCII");
-
-        IOUtils.write((byte[]) null, writer);
-        out.off();
-        writer.flush();
-
-        assertEquals("Sizes differ", 0, baout.size());
-    }
+	public void testWrite_byteArrayToWriter_nullData() throws Exception {
+		this.ioUtilsWriteTestCaseTestArrayToDataTemplate();
+	}
 
     @Test
     public void testWrite_byteArrayToWriter_nullWriter() throws Exception {
@@ -558,18 +549,9 @@ public class IOUtilsWriteTestCase extends FileBasedTestCase {
     }
 
     @Test
-    public void testWrite_charArrayToWriter_Encoding_nullData() throws Exception {
-        final ByteArrayOutputStream baout = new ByteArrayOutputStream();
-        @SuppressWarnings("resource") // deliberately not closed
-        final YellOnFlushAndCloseOutputStream out = new YellOnFlushAndCloseOutputStream(baout, true, true);
-        final Writer writer = new OutputStreamWriter(baout, "US-ASCII");
-
-        IOUtils.write((char[]) null, writer);
-        out.off();
-        writer.flush();
-
-        assertEquals("Sizes differ", 0, baout.size());
-    }
+	public void testWrite_charArrayToWriter_Encoding_nullData() throws Exception {
+		this.ioUtilsWriteTestCaseTestArrayToDataTemplate();
+	}
 
     @Test
     public void testWrite_charArrayToWriter_Encoding_nullStream() throws Exception {
@@ -785,5 +767,16 @@ public class IOUtilsWriteTestCase extends FileBasedTestCase {
         } catch (final NullPointerException ignore) {
         }
     }
+
+	public void ioUtilsWriteTestCaseTestArrayToDataTemplate() throws Exception {
+		final ByteArrayOutputStream baout = new ByteArrayOutputStream();
+		@SuppressWarnings("resource")
+		final YellOnFlushAndCloseOutputStream out = new YellOnFlushAndCloseOutputStream(baout, true, true);
+		final Writer writer = new OutputStreamWriter(baout, "US-ASCII");
+		IOUtils.write((byte[]) null, writer);
+		out.off();
+		writer.flush();
+		assertEquals("Sizes differ", 0, baout.size());
+	}
 
 }

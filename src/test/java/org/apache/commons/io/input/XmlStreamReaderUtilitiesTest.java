@@ -172,34 +172,20 @@ public class XmlStreamReaderUtilitiesTest {
     }
 
     @Test
-    public void testCalculateRawEncodingAdditonalUTF16() throws IOException {
-        //                           BOM         Guess       XML         Default
-        checkRawError(RAWMGS1,       "UTF-16BE", "UTF-16",   null,       null);
-        checkRawEncoding("UTF-16BE", "UTF-16BE", null,       "UTF-16",   null);
-        checkRawEncoding("UTF-16BE", "UTF-16BE", "UTF-16BE", "UTF-16",   null);
-        checkRawError(RAWMGS1,       "UTF-16BE", null,       "UTF-16LE", null);
-        checkRawError(RAWMGS1,       "UTF-16BE", "UTF-16BE", "UTF-16LE", null);
-        checkRawError(RAWMGS1,       "UTF-16LE", "UTF-16",   null,       null);
-        checkRawEncoding("UTF-16LE", "UTF-16LE", null,       "UTF-16",   null);
-        checkRawEncoding("UTF-16LE", "UTF-16LE", "UTF-16LE", "UTF-16",   null);
-        checkRawError(RAWMGS1,       "UTF-16LE", null,       "UTF-16BE", null);
-        checkRawError(RAWMGS1,       "UTF-16LE", "UTF-16LE", "UTF-16BE", null);
-    }
+	public void testCalculateRawEncodingAdditonalUTF16() throws Exception {
+		this.xmlStreamReaderUtilitiesTestTestCalculateRawEncodingAdditonalTemplate("UTF-16BE", "UTF-16", "UTF-16BE",
+				"UTF-16BE", "UTF-16", "UTF-16BE", "UTF-16BE", "UTF-16BE", "UTF-16", "UTF-16BE", "UTF-16LE", "UTF-16BE",
+				"UTF-16BE", "UTF-16LE", "UTF-16LE", "UTF-16", "UTF-16LE", "UTF-16LE", "UTF-16", "UTF-16LE", "UTF-16LE",
+				"UTF-16LE", "UTF-16", "UTF-16LE", "UTF-16BE", "UTF-16LE", "UTF-16LE", "UTF-16BE");
+	}
 
     @Test
-    public void testCalculateRawEncodingAdditonalUTF32() throws IOException {
-        //                           BOM         Guess       XML         Default
-        checkRawError(RAWMGS1,       "UTF-32BE", "UTF-32",   null,       null);
-        checkRawEncoding("UTF-32BE", "UTF-32BE", null,       "UTF-32",   null);
-        checkRawEncoding("UTF-32BE", "UTF-32BE", "UTF-32BE", "UTF-32",   null);
-        checkRawError(RAWMGS1,       "UTF-32BE", null,       "UTF-32LE", null);
-        checkRawError(RAWMGS1,       "UTF-32BE", "UTF-32BE", "UTF-32LE", null);
-        checkRawError(RAWMGS1,       "UTF-32LE", "UTF-32",   null,       null);
-        checkRawEncoding("UTF-32LE", "UTF-32LE", null,       "UTF-32",   null);
-        checkRawEncoding("UTF-32LE", "UTF-32LE", "UTF-32LE", "UTF-32",   null);
-        checkRawError(RAWMGS1,       "UTF-32LE", null,       "UTF-32BE", null);
-        checkRawError(RAWMGS1,       "UTF-32LE", "UTF-32LE", "UTF-32BE", null);
-    }
+	public void testCalculateRawEncodingAdditonalUTF32() throws Exception {
+		this.xmlStreamReaderUtilitiesTestTestCalculateRawEncodingAdditonalTemplate("UTF-32BE", "UTF-32", "UTF-32BE",
+				"UTF-32BE", "UTF-32", "UTF-32BE", "UTF-32BE", "UTF-32BE", "UTF-32", "UTF-32BE", "UTF-32LE", "UTF-32BE",
+				"UTF-32BE", "UTF-32LE", "UTF-32LE", "UTF-32", "UTF-32LE", "UTF-32LE", "UTF-32", "UTF-32LE", "UTF-32LE",
+				"UTF-32LE", "UTF-32", "UTF-32LE", "UTF-32BE", "UTF-32LE", "UTF-32LE", "UTF-32BE");
+	}
 
     private void checkRawEncoding(final String expected,
             final String bomEnc, final String xmlGuessEnc, final String xmlEnc, final String defaultEncoding) throws IOException {
@@ -329,4 +315,22 @@ public class XmlStreamReaderUtilitiesTest {
             super(new ByteArrayInputStream("".getBytes()), null, true, defaultEncoding);
         }
     }
+
+	public void xmlStreamReaderUtilitiesTestTestCalculateRawEncodingAdditonalTemplate(String string1, String string2,
+			String string3, String string4, String string5, String string6, String string7, String string8,
+			String string9, String string10, String string11, String string12, String string13, String string14,
+			String string15, String string16, String string17, String string18, String string19, String string20,
+			String string21, String string22, String string23, String string24, String string25, String string26,
+			String string27, String string28) throws Exception {
+		checkRawError(RAWMGS1, string1, string2, null, null);
+		checkRawEncoding(string3, string4, null, string5, null);
+		checkRawEncoding(string6, string7, string8, string9, null);
+		checkRawError(RAWMGS1, string10, null, string11, null);
+		checkRawError(RAWMGS1, string12, string13, string14, null);
+		checkRawError(RAWMGS1, string15, string16, null, null);
+		checkRawEncoding(string17, string18, null, string19, null);
+		checkRawEncoding(string20, string21, string22, string23, null);
+		checkRawError(RAWMGS1, string24, null, string25, null);
+		checkRawError(RAWMGS1, string26, string27, string28, null);
+	}
 }

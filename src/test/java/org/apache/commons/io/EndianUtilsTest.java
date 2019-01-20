@@ -16,6 +16,7 @@
  */
 package org.apache.commons.io;
 
+import java.io.InputStream;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -107,13 +108,10 @@ public class EndianUtilsTest  {
     }
 
     @Test
-    public void testReadSwappedShort() throws IOException {
-        final byte[] bytes = new byte[] { 0x02, 0x01 };
-        assertEquals( 0x0102, EndianUtils.readSwappedShort( bytes, 0 ) );
-
-        final ByteArrayInputStream input = new ByteArrayInputStream(bytes);
-        assertEquals( 0x0102, EndianUtils.readSwappedShort( input ) );
-    }
+	public void testReadSwappedShort() throws Exception {
+		this.endianUtilsTestTestReadSwappedShortTemplate(new EndianUtilsTestTestReadSwappedShortAdapterImpl(), 0x0102,
+				0x0102);
+	}
 
     @Test
     public void testWriteSwappedShort() throws IOException {
@@ -130,22 +128,16 @@ public class EndianUtilsTest  {
     }
 
     @Test
-    public void testReadSwappedUnsignedShort() throws IOException {
-        final byte[] bytes = new byte[] { 0x02, 0x01 };
-        assertEquals( 0x00000102, EndianUtils.readSwappedUnsignedShort( bytes, 0 ) );
-
-        final ByteArrayInputStream input = new ByteArrayInputStream(bytes);
-        assertEquals( 0x00000102, EndianUtils.readSwappedUnsignedShort( input ) );
-    }
+	public void testReadSwappedUnsignedShort() throws Exception {
+		this.endianUtilsTestTestReadSwappedShortTemplate(new EndianUtilsTestTestReadSwappedUnsignedShortAdapterImpl(),
+				0x00000102, 0x00000102);
+	}
 
     @Test
-    public void testReadSwappedInteger() throws IOException {
-        final byte[] bytes = new byte[] { 0x04, 0x03, 0x02, 0x01 };
-        assertEquals( 0x01020304, EndianUtils.readSwappedInteger( bytes, 0 ) );
-
-        final ByteArrayInputStream input = new ByteArrayInputStream(bytes);
-        assertEquals( 0x01020304, EndianUtils.readSwappedInteger( input ) );
-    }
+	public void testReadSwappedInteger() throws Exception {
+		this.endianUtilsTestTestReadSwappedIntegerTemplate(new EndianUtilsTestTestReadSwappedIntegerAdapterImpl(),
+				0x01020304, 0x01020304);
+	}
 
     @Test
     public void testWriteSwappedInteger() throws IOException {
@@ -166,13 +158,11 @@ public class EndianUtilsTest  {
     }
 
     @Test
-    public void testReadSwappedUnsignedInteger() throws IOException {
-        final byte[] bytes = new byte[] { 0x04, 0x03, 0x02, 0x01 };
-        assertEquals( 0x0000000001020304L, EndianUtils.readSwappedUnsignedInteger( bytes, 0 ) );
-
-        final ByteArrayInputStream input = new ByteArrayInputStream(bytes);
-        assertEquals( 0x0000000001020304L, EndianUtils.readSwappedUnsignedInteger( input ) );
-    }
+	public void testReadSwappedUnsignedInteger() throws Exception {
+		this.endianUtilsTestTestReadSwappedIntegerTemplate(
+				new EndianUtilsTestTestReadSwappedUnsignedIntegerAdapterImpl(), 0x0000000001020304L,
+				0x0000000001020304L);
+	}
 
     @Test
     public void testReadSwappedLong() throws IOException {
@@ -312,5 +302,74 @@ public class EndianUtilsTest  {
         actual = EndianUtils.readSwappedUnsignedInteger(in);
         assertEquals("readSwappedUnsignedInteger(InputStream) was incorrect", expected, actual);
     }
+
+	public void endianUtilsTestTestReadSwappedIntegerTemplate(EndianUtilsTestTestReadSwappedIntegerAdapter adapter,
+			long l1, long l2) throws Exception {
+		final byte[] bytes = new byte[] { 0x04, 0x03, 0x02, 0x01 };
+		assertEquals(l1, adapter.readSwappedInteger(bytes, 0));
+		final ByteArrayInputStream input = new ByteArrayInputStream(bytes);
+		assertEquals(l2, adapter.readSwappedInteger1(input));
+	}
+
+	interface EndianUtilsTestTestReadSwappedIntegerAdapter {
+		long readSwappedInteger(byte[] byteArray1, int i1);
+
+		long readSwappedInteger1(InputStream inputStream1) throws IOException;
+	}
+
+	class EndianUtilsTestTestReadSwappedIntegerAdapterImpl implements EndianUtilsTestTestReadSwappedIntegerAdapter {
+		public long readSwappedInteger(byte[] bytes, int i1) {
+			return EndianUtils.readSwappedInteger(bytes, i1);
+		}
+
+		public long readSwappedInteger1(InputStream input) throws IOException {
+			return EndianUtils.readSwappedInteger(input);
+		}
+	}
+
+	class EndianUtilsTestTestReadSwappedUnsignedIntegerAdapterImpl
+			implements EndianUtilsTestTestReadSwappedIntegerAdapter {
+		public long readSwappedInteger(byte[] bytes, int i1) {
+			return EndianUtils.readSwappedUnsignedInteger(bytes, i1);
+		}
+
+		public long readSwappedInteger1(InputStream input) throws IOException {
+			return EndianUtils.readSwappedUnsignedInteger(input);
+		}
+	}
+
+	public void endianUtilsTestTestReadSwappedShortTemplate(EndianUtilsTestTestReadSwappedShortAdapter adapter, int i1,
+			int i2) throws Exception {
+		final byte[] bytes = new byte[] { 0x02, 0x01 };
+		assertEquals(i1, adapter.readSwappedShort(bytes, 0));
+		final ByteArrayInputStream input = new ByteArrayInputStream(bytes);
+		assertEquals(i2, adapter.readSwappedShort1(input));
+	}
+
+	interface EndianUtilsTestTestReadSwappedShortAdapter {
+		int readSwappedShort(byte[] byteArray1, int i1);
+
+		int readSwappedShort1(InputStream inputStream1) throws IOException;
+	}
+
+	class EndianUtilsTestTestReadSwappedShortAdapterImpl implements EndianUtilsTestTestReadSwappedShortAdapter {
+		public int readSwappedShort(byte[] bytes, int i1) {
+			return EndianUtils.readSwappedShort(bytes, i1);
+		}
+
+		public int readSwappedShort1(InputStream input) throws IOException {
+			return EndianUtils.readSwappedShort(input);
+		}
+	}
+
+	class EndianUtilsTestTestReadSwappedUnsignedShortAdapterImpl implements EndianUtilsTestTestReadSwappedShortAdapter {
+		public int readSwappedShort(byte[] bytes, int i1) {
+			return EndianUtils.readSwappedUnsignedShort(bytes, i1);
+		}
+
+		public int readSwappedShort1(InputStream input) throws IOException {
+			return EndianUtils.readSwappedUnsignedShort(input);
+		}
+	}
 
 }

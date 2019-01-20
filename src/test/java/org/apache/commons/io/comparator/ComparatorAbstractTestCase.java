@@ -69,24 +69,22 @@ public abstract class ComparatorAbstractTestCase extends FileBasedTestCase {
     }
 
     /**
-     * Test the comparator.
-     */
-    @Test
-    public void testComparator() {
-        assertEquals("equal", 0, comparator.compare(equalFile1, equalFile2));
-        assertTrue("less",  comparator.compare(lessFile, moreFile) < 0);
-        assertTrue("more",  comparator.compare(moreFile, lessFile) > 0);
-    }
+	 * Test the comparator.
+	 */
+	@Test
+	public void testComparator() {
+		this.comparatorAbstractTestCaseTestComparatorTemplate(
+				new ComparatorAbstractTestCaseTestComparatorAdapterImpl());
+	}
 
     /**
-     * Test the comparator reversed.
-     */
-    @Test
-    public void testReverseComparator() {
-        assertEquals("equal", 0, reverse.compare(equalFile1, equalFile2));
-        assertTrue("less",  reverse.compare(moreFile, lessFile) < 0);
-        assertTrue("more",  reverse.compare(lessFile, moreFile) > 0);
-    }
+	 * Test the comparator reversed.
+	 */
+	@Test
+	public void testReverseComparator() {
+		this.comparatorAbstractTestCaseTestComparatorTemplate(
+				new ComparatorAbstractTestCaseTestReverseComparatorAdapterImpl());
+	}
 
     /**
      * Test comparator array sort is null safe.
@@ -142,4 +140,29 @@ public abstract class ComparatorAbstractTestCase extends FileBasedTestCase {
         assertNotNull("comparator", comparator.toString());
         assertTrue("reverse", reverse.toString().startsWith("ReverseComparator["));
     }
+
+	public void comparatorAbstractTestCaseTestComparatorTemplate(
+			ComparatorAbstractTestCaseTestComparatorAdapter adapter) {
+		assertEquals("equal", 0, adapter.compare(comparator, equalFile1, equalFile2));
+		assertTrue("less", adapter.compare(comparator, lessFile, moreFile) < 0);
+		assertTrue("more", adapter.compare(comparator, moreFile, lessFile) > 0);
+	}
+
+	interface ComparatorAbstractTestCaseTestComparatorAdapter {
+		int compare(AbstractFileComparator abstractFileComparator1, File file1, File file2);
+	}
+
+	class ComparatorAbstractTestCaseTestComparatorAdapterImpl
+			implements ComparatorAbstractTestCaseTestComparatorAdapter {
+		public int compare(AbstractFileComparator comparator, File equalFile1, File equalFile2) {
+			return comparator.compare(equalFile1, equalFile2);
+		}
+	}
+
+	class ComparatorAbstractTestCaseTestReverseComparatorAdapterImpl
+			implements ComparatorAbstractTestCaseTestComparatorAdapter {
+		public int compare(AbstractFileComparator reverse, File equalFile1, File equalFile2) {
+			return reverse.compare(equalFile1, equalFile2);
+		}
+	}
 }

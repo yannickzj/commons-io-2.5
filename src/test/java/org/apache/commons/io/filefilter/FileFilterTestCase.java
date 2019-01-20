@@ -16,6 +16,11 @@
  */
 package org.apache.commons.io.filefilter;
 
+import java.lang.Object;
+import java.io.File;
+import java.util.Set;
+import java.util.List;
+import java.util.Collection;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
@@ -405,22 +410,16 @@ public class FileFilterTestCase extends FileBasedTestCase {
     }
 
     @Test
-    public void testTrue() throws Exception {
-        final IOFileFilter filter = FileFilterUtils.trueFileFilter();
-        assertFiltering(filter, new File("foo.test"), true);
-        assertFiltering(filter, new File("foo"), true);
-        assertFiltering(filter, null, true);
-        assertSame(TrueFileFilter.TRUE, TrueFileFilter.INSTANCE);
-    }
+	public void testTrue() throws Exception {
+		this.fileFilterTestCaseTestTemplate(new FileFilterTestCaseTestTrueAdapterImpl(), true, true, true,
+				TrueFileFilter.TRUE, TrueFileFilter.INSTANCE);
+	}
 
     @Test
-    public void testFalse() throws Exception {
-        final IOFileFilter filter = FileFilterUtils.falseFileFilter();
-        assertFiltering(filter, new File("foo.test"), false);
-        assertFiltering(filter, new File("foo"), false);
-        assertFiltering(filter, null, false);
-        assertSame(FalseFileFilter.FALSE, FalseFileFilter.INSTANCE);
-    }
+	public void testFalse() throws Exception {
+		this.fileFilterTestCaseTestTemplate(new FileFilterTestCaseTestFalseAdapterImpl(), false, false, false,
+				FalseFileFilter.FALSE, FalseFileFilter.INSTANCE);
+	}
 
     @Test(expected = IllegalArgumentException.class)
     public void testNot() throws Exception {
@@ -687,120 +686,15 @@ public class FileFilterTestCase extends FileBasedTestCase {
     }
 
     @Test
-    public void testMakeCVSAware() throws Exception {
-        final IOFileFilter filter1 = FileFilterUtils.makeCVSAware(null);
-        final IOFileFilter filter2 = FileFilterUtils.makeCVSAware(FileFilterUtils
-            .nameFileFilter("test-file1.txt"));
-
-        File file = new File(getTestDirectory(), "CVS");
-        file.mkdirs();
-        assertFiltering(filter1, file, false);
-        assertFiltering(filter2, file, false);
-        FileUtils.deleteDirectory(file);
-
-        file = new File(getTestDirectory(), "test-file1.txt");
-        if (!file.getParentFile().exists()) {
-            throw new IOException("Cannot create file " + file
-                    + " as the parent directory does not exist");
-        }
-        final BufferedOutputStream output2 =
-                new BufferedOutputStream(new FileOutputStream(file));
-        try {
-            TestUtils.generateTestData(output2, (long) 0);
-        } finally {
-            IOUtils.closeQuietly(output2);
-        }
-        assertFiltering(filter1, file, true);
-        assertFiltering(filter2, file, true);
-
-        file = new File(getTestDirectory(), "test-file2.log");
-        if (!file.getParentFile().exists()) {
-            throw new IOException("Cannot create file " + file
-                    + " as the parent directory does not exist");
-        }
-        final BufferedOutputStream output1 =
-                new BufferedOutputStream(new FileOutputStream(file));
-        try {
-            TestUtils.generateTestData(output1, (long) 0);
-        } finally {
-            IOUtils.closeQuietly(output1);
-        }
-        assertFiltering(filter1, file, true);
-        assertFiltering(filter2, file, false);
-
-        file = new File(getTestDirectory(), "CVS");
-        if (!file.getParentFile().exists()) {
-            throw new IOException("Cannot create file " + file
-                    + " as the parent directory does not exist");
-        }
-        final BufferedOutputStream output =
-                new BufferedOutputStream(new FileOutputStream(file));
-        try {
-            TestUtils.generateTestData(output, (long) 0);
-        } finally {
-            IOUtils.closeQuietly(output);
-        }
-        assertFiltering(filter1, file, true);
-        assertFiltering(filter2, file, false);
-    }
+	public void testMakeCVSAware() throws Exception {
+		this.fileFilterTestCaseTestMakeAwareTemplate(new FileFilterTestCaseTestMakeCVSAwareAdapterImpl(), "CVS", "CVS");
+	}
 
     @Test
-    public void testMakeSVNAware() throws Exception {
-        final IOFileFilter filter1 = FileFilterUtils.makeSVNAware(null);
-        final IOFileFilter filter2 = FileFilterUtils.makeSVNAware(FileFilterUtils
-            .nameFileFilter("test-file1.txt"));
-
-        File file = new File(getTestDirectory(), SVN_DIR_NAME);
-        file.mkdirs();
-        assertFiltering(filter1, file, false);
-        assertFiltering(filter2, file, false);
-        FileUtils.deleteDirectory(file);
-
-        file = new File(getTestDirectory(), "test-file1.txt");
-        if (!file.getParentFile().exists()) {
-            throw new IOException("Cannot create file " + file
-                    + " as the parent directory does not exist");
-        }
-        final BufferedOutputStream output2 =
-                new BufferedOutputStream(new FileOutputStream(file));
-        try {
-            TestUtils.generateTestData(output2, (long) 0);
-        } finally {
-            IOUtils.closeQuietly(output2);
-        }
-        assertFiltering(filter1, file, true);
-        assertFiltering(filter2, file, true);
-
-        file = new File(getTestDirectory(), "test-file2.log");
-        if (!file.getParentFile().exists()) {
-            throw new IOException("Cannot create file " + file
-                    + " as the parent directory does not exist");
-        }
-        final BufferedOutputStream output1 =
-                new BufferedOutputStream(new FileOutputStream(file));
-        try {
-            TestUtils.generateTestData(output1, (long) 0);
-        } finally {
-            IOUtils.closeQuietly(output1);
-        }
-        assertFiltering(filter1, file, true);
-        assertFiltering(filter2, file, false);
-
-        file = new File(getTestDirectory(), SVN_DIR_NAME);
-        if (!file.getParentFile().exists()) {
-            throw new IOException("Cannot create file " + file
-                    + " as the parent directory does not exist");
-        }
-        final BufferedOutputStream output =
-                new BufferedOutputStream(new FileOutputStream(file));
-        try {
-            TestUtils.generateTestData(output, (long) 0);
-        } finally {
-            IOUtils.closeQuietly(output);
-        }
-        assertFiltering(filter1, file, true);
-        assertFiltering(filter2, file, false);
-    }
+	public void testMakeSVNAware() throws Exception {
+		this.fileFilterTestCaseTestMakeAwareTemplate(new FileFilterTestCaseTestMakeSVNAwareAdapterImpl(), SVN_DIR_NAME,
+				SVN_DIR_NAME);
+	}
 
     @Test
     public void testAgeFilter() throws Exception {
@@ -1054,105 +948,17 @@ public class FileFilterTestCase extends FileBasedTestCase {
         FileUtils.forceDelete(emptyDir);
     }
 
-    //-----------------------------------------------------------------------
     @Test
-    public void testMakeDirectoryOnly() throws Exception {
-        assertSame(DirectoryFileFilter.DIRECTORY, FileFilterUtils.makeDirectoryOnly(null));
+	public void testMakeDirectoryOnly() throws Exception {
+		this.fileFilterTestCaseTestMakeOnlyTemplate(new FileFilterTestCaseTestMakeDirectoryOnlyAdapterImpl(),
+				DirectoryFileFilter.DIRECTORY);
+	}
 
-        final IOFileFilter filter = FileFilterUtils.makeDirectoryOnly(
-                FileFilterUtils.nameFileFilter("B"));
-
-        final File fileA = new File(getTestDirectory(), "A");
-        final File fileB = new File(getTestDirectory(), "B");
-
-        fileA.mkdirs();
-        fileB.mkdirs();
-
-        assertFiltering(filter, fileA, false);
-        assertFiltering(filter, fileB, true);
-
-        FileUtils.deleteDirectory(fileA);
-        FileUtils.deleteDirectory(fileB);
-
-        if (!fileA.getParentFile().exists()) {
-            throw new IOException("Cannot create file " + fileA
-                    + " as the parent directory does not exist");
-        }
-        final BufferedOutputStream output1 =
-                new BufferedOutputStream(new FileOutputStream(fileA));
-        try {
-            TestUtils.generateTestData(output1, (long) 32);
-        } finally {
-            IOUtils.closeQuietly(output1);
-        }
-        if (!fileB.getParentFile().exists()) {
-            throw new IOException("Cannot create file " + fileB
-                    + " as the parent directory does not exist");
-        }
-        final BufferedOutputStream output =
-                new BufferedOutputStream(new FileOutputStream(fileB));
-        try {
-            TestUtils.generateTestData(output, (long) 32);
-        } finally {
-            IOUtils.closeQuietly(output);
-        }
-
-        assertFiltering(filter, fileA, false);
-        assertFiltering(filter, fileB, false);
-
-        fileA.delete();
-        fileB.delete();
-    }
-
-    //-----------------------------------------------------------------------
     @Test
-    public void testMakeFileOnly() throws Exception {
-        assertSame(FileFileFilter.FILE, FileFilterUtils.makeFileOnly(null));
-
-        final IOFileFilter filter = FileFilterUtils.makeFileOnly(
-                FileFilterUtils.nameFileFilter("B"));
-
-        final File fileA = new File(getTestDirectory(), "A");
-        final File fileB = new File(getTestDirectory(), "B");
-
-        fileA.mkdirs();
-        fileB.mkdirs();
-
-        assertFiltering(filter, fileA, false);
-        assertFiltering(filter, fileB, false);
-
-        FileUtils.deleteDirectory(fileA);
-        FileUtils.deleteDirectory(fileB);
-
-        if (!fileA.getParentFile().exists()) {
-            throw new IOException("Cannot create file " + fileA
-                    + " as the parent directory does not exist");
-        }
-        final BufferedOutputStream output1 =
-                new BufferedOutputStream(new FileOutputStream(fileA));
-        try {
-            TestUtils.generateTestData(output1, (long) 32);
-        } finally {
-            IOUtils.closeQuietly(output1);
-        }
-        if (!fileB.getParentFile().exists()) {
-            throw new IOException("Cannot create file " + fileB
-                    + " as the parent directory does not exist");
-        }
-        final BufferedOutputStream output =
-                new BufferedOutputStream(new FileOutputStream(fileB));
-        try {
-            TestUtils.generateTestData(output, (long) 32);
-        } finally {
-            IOUtils.closeQuietly(output);
-        }
-
-        assertFiltering(filter, fileA, false);
-        assertFiltering(filter, fileB, true);
-
-        fileA.delete();
-        fileB.delete();
-    }
+	public void testMakeFileOnly() throws Exception {
+		this.fileFilterTestCaseTestMakeOnlyTemplate(new FileFilterTestCaseTestMakeFileOnlyAdapterImpl(),
+				FileFileFilter.FILE);
+	}
 
     //-----------------------------------------------------------------------
 
@@ -1434,22 +1240,10 @@ public class FileFilterTestCase extends FileBasedTestCase {
         assertFalse(filteredList.contains(fileB));
     }
 
-    /*
-     * Test method for {@link FileFilterUtils#filterList(IOFileFilter, File...)}
-     * that tests that the method properly filters files from the list.
-     */
     @Test
-    public void testFilterList_fromArray() throws Exception {
-        final File fileA = TestUtils.newFile(getTestDirectory(), "A");
-        final File fileB = TestUtils.newFile(getTestDirectory(), "B");
-
-        final IOFileFilter filter = FileFilterUtils.nameFileFilter("A");
-
-        final List<File> filteredList = FileFilterUtils.filterList(filter, fileA, fileB);
-
-        assertTrue(filteredList.contains(fileA));
-        assertFalse(filteredList.contains(fileB));
-    }
+	public void testFilterList_fromArray() throws Exception {
+		this.fileFilterTestCaseTestFilterArrayTemplate(new FileFilterTestCaseTestFilterList_fromArrayAdapterImpl());
+	}
 
     /*
      * Test method for {@link FileFilterUtils#filterList(IOFileFilter, java.lang.Iterable)}
@@ -1495,22 +1289,10 @@ public class FileFilterTestCase extends FileBasedTestCase {
         assertFalse(filteredSet.contains(fileB));
     }
 
-    /*
-     * Test method for {@link FileFilterUtils#filterSet(IOFileFilter, File...)}
-     * that tests that the method properly filters files from the set.
-     */
     @Test
-    public void testFilterSet_fromArray() throws Exception {
-        final File fileA = TestUtils.newFile(getTestDirectory(), "A");
-        final File fileB = TestUtils.newFile(getTestDirectory(), "B");
-
-        final IOFileFilter filter = FileFilterUtils.nameFileFilter("A");
-
-        final Set<File> filteredSet = FileFilterUtils.filterSet(filter, fileA, fileB);
-
-        assertTrue(filteredSet.contains(fileA));
-        assertFalse(filteredSet.contains(fileB));
-    }
+	public void testFilterSet_fromArray() throws Exception {
+		this.fileFilterTestCaseTestFilterArrayTemplate(new FileFilterTestCaseTestFilterSet_fromArrayAdapterImpl());
+	}
 
     /*
      * Test method for {@link FileFilterUtils#filterSet(IOFileFilter, java.lang.Iterable)}
@@ -1564,4 +1346,182 @@ public class FileFilterTestCase extends FileBasedTestCase {
         assertNotNull(FileFilterUtils.asFileFilter((FileFilter) FalseFileFilter.INSTANCE));
         assertNotNull(FileFilterUtils.asFileFilter((FilenameFilter) FalseFileFilter.INSTANCE).toString());
     }
+
+	public void fileFilterTestCaseTestMakeAwareTemplate(FileFilterTestCaseTestMakeAwareAdapter adapter, String string1,
+			String string2) throws Exception {
+		final IOFileFilter filter1 = adapter.makeAware(null);
+		final IOFileFilter filter2 = adapter.makeAware(FileFilterUtils.nameFileFilter("test-file1.txt"));
+		File file = new File(getTestDirectory(), string1);
+		file.mkdirs();
+		assertFiltering(filter1, file, false);
+		assertFiltering(filter2, file, false);
+		FileUtils.deleteDirectory(file);
+		file = new File(getTestDirectory(), "test-file1.txt");
+		if (!file.getParentFile().exists()) {
+			throw new IOException("Cannot create file " + file + " as the parent directory does not exist");
+		}
+		final BufferedOutputStream output2 = new BufferedOutputStream(new FileOutputStream(file));
+		try {
+			TestUtils.generateTestData(output2, (long) 0);
+		} finally {
+			IOUtils.closeQuietly(output2);
+		}
+		assertFiltering(filter1, file, true);
+		assertFiltering(filter2, file, true);
+		file = new File(getTestDirectory(), "test-file2.log");
+		if (!file.getParentFile().exists()) {
+			throw new IOException("Cannot create file " + file + " as the parent directory does not exist");
+		}
+		final BufferedOutputStream output1 = new BufferedOutputStream(new FileOutputStream(file));
+		try {
+			TestUtils.generateTestData(output1, (long) 0);
+		} finally {
+			IOUtils.closeQuietly(output1);
+		}
+		assertFiltering(filter1, file, true);
+		assertFiltering(filter2, file, false);
+		file = new File(getTestDirectory(), string2);
+		if (!file.getParentFile().exists()) {
+			throw new IOException("Cannot create file " + file + " as the parent directory does not exist");
+		}
+		final BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(file));
+		try {
+			TestUtils.generateTestData(output, (long) 0);
+		} finally {
+			IOUtils.closeQuietly(output);
+		}
+		assertFiltering(filter1, file, true);
+		assertFiltering(filter2, file, false);
+	}
+
+	interface FileFilterTestCaseTestMakeAwareAdapter {
+		IOFileFilter makeAware(IOFileFilter iOFileFilter1);
+	}
+
+	class FileFilterTestCaseTestMakeCVSAwareAdapterImpl implements FileFilterTestCaseTestMakeAwareAdapter {
+		public IOFileFilter makeAware(IOFileFilter iOFileFilter1) {
+			return FileFilterUtils.makeCVSAware(iOFileFilter1);
+		}
+	}
+
+	class FileFilterTestCaseTestMakeSVNAwareAdapterImpl implements FileFilterTestCaseTestMakeAwareAdapter {
+		public IOFileFilter makeAware(IOFileFilter iOFileFilter1) {
+			return FileFilterUtils.makeSVNAware(iOFileFilter1);
+		}
+	}
+
+	public void fileFilterTestCaseTestMakeOnlyTemplate(FileFilterTestCaseTestMakeOnlyAdapter adapter,
+			IOFileFilter iOFileFilter1) throws Exception {
+		assertSame(iOFileFilter1, adapter.makeOnly(null));
+		final IOFileFilter filter = adapter.makeOnly(FileFilterUtils.nameFileFilter("B"));
+		final File fileA = new File(getTestDirectory(), "A");
+		final File fileB = new File(getTestDirectory(), "B");
+		fileA.mkdirs();
+		fileB.mkdirs();
+		assertFiltering(filter, fileA, false);
+		assertFiltering(filter, fileB, true);
+		FileUtils.deleteDirectory(fileA);
+		FileUtils.deleteDirectory(fileB);
+		if (!fileA.getParentFile().exists()) {
+			throw new IOException("Cannot create file " + fileA + " as the parent directory does not exist");
+		}
+		final BufferedOutputStream output1 = new BufferedOutputStream(new FileOutputStream(fileA));
+		try {
+			TestUtils.generateTestData(output1, (long) 32);
+		} finally {
+			IOUtils.closeQuietly(output1);
+		}
+		if (!fileB.getParentFile().exists()) {
+			throw new IOException("Cannot create file " + fileB + " as the parent directory does not exist");
+		}
+		final BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(fileB));
+		try {
+			TestUtils.generateTestData(output, (long) 32);
+		} finally {
+			IOUtils.closeQuietly(output);
+		}
+		assertFiltering(filter, fileA, false);
+		assertFiltering(filter, fileB, false);
+		fileA.delete();
+		fileB.delete();
+	}
+
+	interface FileFilterTestCaseTestMakeOnlyAdapter {
+		IOFileFilter makeOnly(IOFileFilter iOFileFilter1);
+	}
+
+	class FileFilterTestCaseTestMakeDirectoryOnlyAdapterImpl implements FileFilterTestCaseTestMakeOnlyAdapter {
+		public IOFileFilter makeOnly(IOFileFilter iOFileFilter1) {
+			return FileFilterUtils.makeDirectoryOnly(iOFileFilter1);
+		}
+	}
+
+	class FileFilterTestCaseTestMakeFileOnlyAdapterImpl implements FileFilterTestCaseTestMakeOnlyAdapter {
+		public IOFileFilter makeOnly(IOFileFilter iOFileFilter1) {
+			return FileFilterUtils.makeFileOnly(iOFileFilter1);
+		}
+	}
+
+	public <TCollectionFile extends Collection<File>> void fileFilterTestCaseTestFilterArrayTemplate(
+			FileFilterTestCaseTestFilterArrayAdapter<TCollectionFile> adapter) throws Exception {
+		final File fileA = TestUtils.newFile(getTestDirectory(), "A");
+		final File fileB = TestUtils.newFile(getTestDirectory(), "B");
+		final IOFileFilter filter = FileFilterUtils.nameFileFilter("A");
+		final TCollectionFile filtered1 = adapter.filter(filter, fileA, fileB);
+		assertTrue(adapter.contains(filtered1, fileA));
+		assertFalse(adapter.contains(filtered1, fileB));
+	}
+
+	interface FileFilterTestCaseTestFilterArrayAdapter<TCollectionFile> {
+		TCollectionFile filter(IOFileFilter iOFileFilter1, File... fileArray1);
+
+		boolean contains(TCollectionFile tCollectionFile1, Object object1);
+	}
+
+	class FileFilterTestCaseTestFilterList_fromArrayAdapterImpl
+			implements FileFilterTestCaseTestFilterArrayAdapter<List<File>> {
+		public List<File> filter(IOFileFilter filter, File... fileA) {
+			return FileFilterUtils.filterList(filter, fileA);
+		}
+
+		public boolean contains(List<File> filtered1, Object fileA) {
+			return filtered1.contains(fileA);
+		}
+	}
+
+	class FileFilterTestCaseTestFilterSet_fromArrayAdapterImpl
+			implements FileFilterTestCaseTestFilterArrayAdapter<Set<File>> {
+		public Set<File> filter(IOFileFilter filter, File... fileA) {
+			return FileFilterUtils.filterSet(filter, fileA);
+		}
+
+		public boolean contains(Set<File> filteredSet, Object fileA) {
+			return filteredSet.contains(fileA);
+		}
+	}
+
+	public void fileFilterTestCaseTestTemplate(FileFilterTestCaseTestAdapter adapter, boolean b1, boolean b2,
+			boolean b3, IOFileFilter iOFileFilter1, IOFileFilter iOFileFilter2) throws Exception {
+		final IOFileFilter filter = adapter.fileFilter();
+		assertFiltering(filter, new File("foo.test"), b1);
+		assertFiltering(filter, new File("foo"), b2);
+		assertFiltering(filter, null, b3);
+		assertSame(iOFileFilter1, iOFileFilter2);
+	}
+
+	interface FileFilterTestCaseTestAdapter {
+		IOFileFilter fileFilter();
+	}
+
+	class FileFilterTestCaseTestTrueAdapterImpl implements FileFilterTestCaseTestAdapter {
+		public IOFileFilter fileFilter() {
+			return FileFilterUtils.trueFileFilter();
+		}
+	}
+
+	class FileFilterTestCaseTestFalseAdapterImpl implements FileFilterTestCaseTestAdapter {
+		public IOFileFilter fileFilter() {
+			return FileFilterUtils.falseFileFilter();
+		}
+	}
 }

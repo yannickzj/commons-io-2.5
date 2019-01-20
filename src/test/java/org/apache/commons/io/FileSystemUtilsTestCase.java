@@ -195,40 +195,15 @@ public class FileSystemUtilsTestCase extends FileBasedTestCase {
     }
 
     @Test
-    public void testGetFreeSpaceWindows_String_NormalResponse() throws Exception {
-        final String lines =
-                " Volume in drive C is HDD\n" +
-                        " Volume Serial Number is XXXX-YYYY\n" +
-                        "\n" +
-                        " Directory of C:\\Documents and Settings\\Xxxx\n" +
-                        "\n" +
-                        "19/08/2005  22:43    <DIR>          .\n" +
-                        "19/08/2005  22:43    <DIR>          ..\n" +
-                        "11/08/2005  01:07                81 build.properties\n" +
-                        "17/08/2005  21:44    <DIR>          Desktop\n" +
-                        "               7 File(s)         180260 bytes\n" +
-                        "              10 Dir(s)     41411551232 bytes free";
-        final FileSystemUtils fsu = new MockFileSystemUtils(0, lines, "dir /a /-c \"C:\"");
-        assertEquals(41411551232L, fsu.freeSpaceWindows("C:", -1));
-    }
+	public void testGetFreeSpaceWindows_String_NormalResponse() throws Exception {
+		this.fileSystemUtilsTestCaseTestGetFreeSpaceWindows_String_Template("dir /a /-c \"C:\"", "C:");
+	}
 
     @Test
-    public void testGetFreeSpaceWindows_String_StripDrive() throws Exception {
-        final String lines =
-                " Volume in drive C is HDD\n" +
-                        " Volume Serial Number is XXXX-YYYY\n" +
-                        "\n" +
-                        " Directory of C:\\Documents and Settings\\Xxxx\n" +
-                        "\n" +
-                        "19/08/2005  22:43    <DIR>          .\n" +
-                        "19/08/2005  22:43    <DIR>          ..\n" +
-                        "11/08/2005  01:07                81 build.properties\n" +
-                        "17/08/2005  21:44    <DIR>          Desktop\n" +
-                        "               7 File(s)         180260 bytes\n" +
-                        "              10 Dir(s)     41411551232 bytes free";
-        final FileSystemUtils fsu = new MockFileSystemUtils(0, lines, "dir /a /-c \"C:\\somedir\"");
-        assertEquals(41411551232L, fsu.freeSpaceWindows("C:\\somedir", -1));
-    }
+	public void testGetFreeSpaceWindows_String_StripDrive() throws Exception {
+		this.fileSystemUtilsTestCaseTestGetFreeSpaceWindows_String_Template("dir /a /-c \"C:\\somedir\"",
+				"C:\\somedir");
+	}
 
     @Test
     public void testGetFreeSpaceWindows_String_quoted() throws Exception {
@@ -580,5 +555,16 @@ public class FileSystemUtilsTestCase extends FileBasedTestCase {
             };
         }
     }
+
+	public void fileSystemUtilsTestCaseTestGetFreeSpaceWindows_String_Template(String string1, String string2)
+			throws Exception {
+		final String lines = " Volume in drive C is HDD\n" + " Volume Serial Number is XXXX-YYYY\n" + "\n"
+				+ " Directory of C:\\Documents and Settings\\Xxxx\n" + "\n" + "19/08/2005  22:43    <DIR>          .\n"
+				+ "19/08/2005  22:43    <DIR>          ..\n" + "11/08/2005  01:07                81 build.properties\n"
+				+ "17/08/2005  21:44    <DIR>          Desktop\n" + "               7 File(s)         180260 bytes\n"
+				+ "              10 Dir(s)     41411551232 bytes free";
+		final FileSystemUtils fsu = new MockFileSystemUtils(0, lines, string1);
+		assertEquals(41411551232L, fsu.freeSpaceWindows(string2, -1));
+	}
 
 }

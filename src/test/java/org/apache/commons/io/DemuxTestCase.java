@@ -16,6 +16,10 @@
  */
 package org.apache.commons.io;
 
+import org.apache.commons.io.input.DemuxInputStream;
+import java.lang.String;
+import org.apache.commons.io.output.DemuxOutputStream;
+import java.lang.Object;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -25,9 +29,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Random;
 
-import org.apache.commons.io.input.DemuxInputStream;
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.commons.io.output.DemuxOutputStream;
 import org.apache.commons.io.testtools.TestUtils;
 import org.junit.Test;
 
@@ -102,40 +104,14 @@ public class DemuxTestCase {
     }
 
     @Test
-    public void testOutputStream()
-            throws Exception {
-        final DemuxOutputStream output = new DemuxOutputStream();
-        startWriter(T1, DATA1, output);
-        startWriter(T2, DATA2, output);
-        startWriter(T3, DATA3, output);
-        startWriter(T4, DATA4, output);
-
-        doStart();
-        doJoin();
-
-        assertEquals("Data1", DATA1, getOutput(T1));
-        assertEquals("Data2", DATA2, getOutput(T2));
-        assertEquals("Data3", DATA3, getOutput(T3));
-        assertEquals("Data4", DATA4, getOutput(T4));
-    }
+	public void testOutputStream() throws Exception {
+		this.demuxTestCaseTestStreamTemplate(new DemuxTestCaseTestOutputStreamAdapterImpl(), DemuxOutputStream.class);
+	}
 
     @Test
-    public void testInputStream()
-            throws Exception {
-        final DemuxInputStream input = new DemuxInputStream();
-        startReader(T1, DATA1, input);
-        startReader(T2, DATA2, input);
-        startReader(T3, DATA3, input);
-        startReader(T4, DATA4, input);
-
-        doStart();
-        doJoin();
-
-        assertEquals("Data1", DATA1, getInput(T1));
-        assertEquals("Data2", DATA2, getInput(T2));
-        assertEquals("Data3", DATA3, getInput(T3));
-        assertEquals("Data4", DATA4, getInput(T4));
-    }
+	public void testInputStream() throws Exception {
+		this.demuxTestCaseTestStreamTemplate(new DemuxTestCaseTestInputStreamAdapterImpl(), DemuxInputStream.class);
+	}
 
     private static class ReaderThread
             extends Thread {
@@ -206,5 +182,47 @@ public class DemuxTestCase {
             }
         }
     }
+
+	public <TDemuxStream extends Object> void demuxTestCaseTestStreamTemplate(
+			DemuxTestCaseTestStreamAdapter<TDemuxStream> adapter, Class<TDemuxStream> clazzTDemuxStream)
+			throws Exception {
+		final TDemuxStream v1 = clazzTDemuxStream.newInstance();
+		adapter.start(T1, DATA1, v1);
+		adapter.start(T2, DATA2, v1);
+		adapter.start(T3, DATA3, v1);
+		adapter.start(T4, DATA4, v1);
+		doStart();
+		doJoin();
+		assertEquals("Data1", DATA1, adapter.get(T1));
+		assertEquals("Data2", DATA2, adapter.get(T2));
+		assertEquals("Data3", DATA3, adapter.get(T3));
+		assertEquals("Data4", DATA4, adapter.get(T4));
+	}
+
+	interface DemuxTestCaseTestStreamAdapter<TDemuxStream> {
+		void start(String string1, String string2, TDemuxStream tDemuxStream1) throws Exception;
+
+		String get(String string1);
+	}
+
+	class DemuxTestCaseTestOutputStreamAdapterImpl implements DemuxTestCaseTestStreamAdapter<DemuxOutputStream> {
+		public void start(String T1, String DATA1, DemuxOutputStream output) throws Exception {
+			startWriter(T1, DATA1, output);
+		}
+
+		public String get(String T1) {
+			return getOutput(T1);
+		}
+	}
+
+	class DemuxTestCaseTestInputStreamAdapterImpl implements DemuxTestCaseTestStreamAdapter<DemuxInputStream> {
+		public void start(String T1, String DATA1, DemuxInputStream input) throws Exception {
+			startReader(T1, DATA1, input);
+		}
+
+		public String get(String T1) {
+			return getInput(T1);
+		}
+	}
 }
 

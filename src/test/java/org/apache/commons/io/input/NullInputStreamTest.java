@@ -16,12 +16,11 @@
  */
 package org.apache.commons.io.input;
 
+import java.io.InputStream;
 import org.junit.Test;
 
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.InputStream;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -106,18 +105,11 @@ public class NullInputStreamTest {
     }
 
     @Test
-    public void testEOFException() throws Exception {
-        final InputStream input = new TestNullInputStream(2, false, true);
-        assertEquals("Read 1",  0, input.read());
-        assertEquals("Read 2",  1, input.read());
-        try {
-            final int result = input.read();
-            fail("Should have thrown an EOFException, byte=[" + result + "]");
-        } catch (final EOFException e) {
-            // expected
-        }
-        input.close();
-    }
+	public void testEOFException() throws Exception {
+		NullTestTestEOFExceptionTemplate.nullTestTestEOFExceptionTemplate(
+				new NullInputStreamTestTestEOFExceptionAdapterImpl(), NullInputStreamTest.TestNullInputStream.class,
+				"Should have thrown an EOFException, byte=[");
+	}
 
     @Test
     public void testMarkAndReset() throws Exception {
@@ -172,45 +164,17 @@ public class NullInputStreamTest {
     }
 
     @Test
-    public void testMarkNotSupported() throws Exception {
-        final InputStream input = new TestNullInputStream(100, false, true);
-        assertFalse("Mark Should NOT be Supported", input.markSupported());
-
-        try {
-            input.mark(5);
-            fail("mark() should throw UnsupportedOperationException");
-        } catch (final UnsupportedOperationException e) {
-            assertEquals("mark() error message",  "Mark not supported", e.getMessage());
-        }
-
-        try {
-            input.reset();
-            fail("reset() should throw UnsupportedOperationException");
-        } catch (final UnsupportedOperationException e) {
-            assertEquals("reset() error message",  "Mark not supported", e.getMessage());
-        }
-        input.close();
-    }
+	public void testMarkNotSupported() throws Exception {
+		NullTestTestMarkNotSupportedTemplate.nullTestTestMarkNotSupportedTemplate(
+				new NullInputStreamTestTestMarkNotSupportedAdapterImpl(),
+				NullInputStreamTest.TestNullInputStream.class);
+	}
 
     @Test
-    public void testSkip() throws Exception {
-        final InputStream input = new TestNullInputStream(10, true, false);
-        assertEquals("Read 1", 0, input.read());
-        assertEquals("Read 2", 1, input.read());
-        assertEquals("Skip 1", 5, input.skip(5));
-        assertEquals("Read 3", 7, input.read());
-        assertEquals("Skip 2", 2, input.skip(5)); // only 2 left to skip
-        assertEquals("Skip 3 (EOF)", -1, input.skip(5)); // End of file
-        try {
-            input.skip(5); //
-            fail("Expected IOException for skipping after end of file");
-        } catch (final IOException e) {
-            assertEquals("Skip after EOF IOException message",
-                    "Skip after end of file",
-                    e.getMessage());
-        }
-        input.close();
-    }
+	public void testSkip() throws Exception {
+		NullTestTestSkipTemplate.nullTestTestSkipTemplate(new NullInputStreamTestTestSkipAdapterImpl(),
+				NullInputStreamTest.TestNullInputStream.class);
+	}
 
 
     // ------------- Test NullInputStream implementation -------------
@@ -235,4 +199,50 @@ public class NullInputStreamTest {
         }
 
     }
+
+
+	class NullInputStreamTestTestMarkNotSupportedAdapterImpl
+			implements NullTestTestMarkNotSupportedAdapter<InputStream> {
+		public boolean markSupported(InputStream v1) {
+			return v1.markSupported();
+		}
+
+		public void mark(InputStream v1, int i1) {
+			v1.mark(i1);
+		}
+
+		public void reset(InputStream v1) throws IOException {
+			v1.reset();
+		}
+
+		public void close(InputStream v1) throws IOException {
+			v1.close();
+		}
+	}
+
+
+	class NullInputStreamTestTestSkipAdapterImpl implements NullTestTestSkipAdapter<InputStream> {
+		public int read(InputStream v1) throws IOException {
+			return v1.read();
+		}
+
+		public long skip(InputStream v1, long l1) throws IOException {
+			return v1.skip(l1);
+		}
+
+		public void close(InputStream v1) throws IOException {
+			v1.close();
+		}
+	}
+
+
+	class NullInputStreamTestTestEOFExceptionAdapterImpl implements NullTestTestEOFExceptionAdapter<InputStream> {
+		public int read(InputStream v1) throws IOException {
+			return v1.read();
+		}
+
+		public void close(InputStream v1) throws IOException {
+			v1.close();
+		}
+	}
 }

@@ -16,10 +16,10 @@
  */
 package org.apache.commons.io.output;
 
+import java.io.ByteArrayOutputStream;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
@@ -50,38 +50,22 @@ public class TeeOutputStreamTest {
     }
 
     /**
-     * Tests that the branch {@code OutputStream} is closed when closing the main {@code OutputStream} throws an
-     * exception on {@link TeeOutputStream#close()}.
-     */
-    @Test
-    public void testCloseBranchIOException() {
-        final ByteArrayOutputStream badOs = new ExceptionOnCloseByteArrayOutputStream();
-        final RecordCloseByteArrayOutputStream goodOs = new RecordCloseByteArrayOutputStream();
-        final TeeOutputStream tos = new TeeOutputStream(goodOs, badOs);
-        try {
-            tos.close();
-            Assert.fail("Expected " + IOException.class.getName());
-        } catch (final IOException e) {
-            Assert.assertTrue(goodOs.closed);
-        }
-    }
+	 * Tests that the branch  {@code  OutputStream}  is closed when closing the main  {@code  OutputStream}  throws an exception on  {@link TeeOutputStream#close()} .
+	 */
+	@Test
+	public void testCloseBranchIOException() {
+		this.teeOutputStreamTestTestCloseIOExceptionTemplate(
+				new TeeOutputStreamTestTestCloseBranchIOExceptionAdapterImpl());
+	}
 
     /**
-     * Tests that the main {@code OutputStream} is closed when closing the branch {@code OutputStream} throws an
-     * exception on {@link TeeOutputStream#close()}.
-     */
-    @Test
-    public void testCloseMainIOException() {
-        final ByteArrayOutputStream badOs = new ExceptionOnCloseByteArrayOutputStream();
-        final RecordCloseByteArrayOutputStream goodOs = new RecordCloseByteArrayOutputStream();
-        final TeeOutputStream tos = new TeeOutputStream(badOs, goodOs);
-        try {
-            tos.close();
-            Assert.fail("Expected " + IOException.class.getName());
-        } catch (final IOException e) {
-            Assert.assertTrue(goodOs.closed);
-        }
-    }
+	 * Tests that the main  {@code  OutputStream}  is closed when closing the branch  {@code  OutputStream}  throws an exception on  {@link TeeOutputStream#close()} .
+	 */
+	@Test
+	public void testCloseMainIOException() {
+		this.teeOutputStreamTestTestCloseIOExceptionTemplate(
+				new TeeOutputStreamTestTestCloseMainIOExceptionAdapterImpl());
+	}
 
     @Test
     public void testTee() throws IOException {
@@ -115,5 +99,55 @@ public class TeeOutputStreamTest {
             assertEquals(msg + ": array[ " + i + "] mismatch", array1[i], array2[i]);
         }
     }
+
+	public void teeOutputStreamTestTestCloseIOExceptionTemplate(
+			TeeOutputStreamTestTestCloseIOExceptionAdapter adapter) {
+		final ByteArrayOutputStream badOs = new ExceptionOnCloseByteArrayOutputStream();
+		final RecordCloseByteArrayOutputStream goodOs = new RecordCloseByteArrayOutputStream();
+		final TeeOutputStream tos = new TeeOutputStream(adapter.action1(goodOs, badOs), adapter.action2(badOs, goodOs));
+		try {
+			tos.close();
+			Assert.fail("Expected " + IOException.class.getName());
+		} catch (final IOException e) {
+			Assert.assertTrue(goodOs.closed);
+		}
+	}
+
+	interface TeeOutputStreamTestTestCloseIOExceptionAdapter {
+		ByteArrayOutputStream action1(
+				TeeOutputStreamTest.RecordCloseByteArrayOutputStream recordCloseByteArrayOutputStream1,
+				ByteArrayOutputStream byteArrayOutputStream1);
+
+		ByteArrayOutputStream action2(ByteArrayOutputStream byteArrayOutputStream1,
+				TeeOutputStreamTest.RecordCloseByteArrayOutputStream recordCloseByteArrayOutputStream1);
+	}
+
+	class TeeOutputStreamTestTestCloseBranchIOExceptionAdapterImpl
+			implements TeeOutputStreamTestTestCloseIOExceptionAdapter {
+		public ByteArrayOutputStream action1(
+				TeeOutputStreamTest.RecordCloseByteArrayOutputStream recordCloseByteArrayOutputStream1,
+				ByteArrayOutputStream byteArrayOutputStream1) {
+			return recordCloseByteArrayOutputStream1;
+		}
+
+		public ByteArrayOutputStream action2(ByteArrayOutputStream byteArrayOutputStream1,
+				TeeOutputStreamTest.RecordCloseByteArrayOutputStream recordCloseByteArrayOutputStream1) {
+			return byteArrayOutputStream1;
+		}
+	}
+
+	class TeeOutputStreamTestTestCloseMainIOExceptionAdapterImpl
+			implements TeeOutputStreamTestTestCloseIOExceptionAdapter {
+		public ByteArrayOutputStream action1(
+				TeeOutputStreamTest.RecordCloseByteArrayOutputStream recordCloseByteArrayOutputStream1,
+				ByteArrayOutputStream byteArrayOutputStream1) {
+			return byteArrayOutputStream1;
+		}
+
+		public ByteArrayOutputStream action2(ByteArrayOutputStream byteArrayOutputStream1,
+				TeeOutputStreamTest.RecordCloseByteArrayOutputStream recordCloseByteArrayOutputStream1) {
+			return recordCloseByteArrayOutputStream1;
+		}
+	}
 
 }

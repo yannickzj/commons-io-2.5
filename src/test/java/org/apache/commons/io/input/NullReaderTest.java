@@ -16,12 +16,11 @@
  */
 package org.apache.commons.io.input;
 
+import java.io.Reader;
 import org.junit.Test;
 
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.Reader;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -103,18 +102,11 @@ public class NullReaderTest {
     }
 
     @Test
-    public void testEOFException() throws Exception {
-        final Reader reader = new TestNullReader(2, false, true);
-        assertEquals("Read 1",  0, reader.read());
-        assertEquals("Read 2",  1, reader.read());
-        try {
-            final int result = reader.read();
-            fail("Should have thrown an EOFException, value=[" + result + "]");
-        } catch (final EOFException e) {
-            // expected
-        }
-        reader.close();
-    }
+	public void testEOFException() throws Exception {
+		NullTestTestEOFExceptionTemplate.nullTestTestEOFExceptionTemplate(
+				new NullReaderTestTestEOFExceptionAdapterImpl(), NullReaderTest.TestNullReader.class,
+				"Should have thrown an EOFException, value=[");
+	}
 
     @Test
     public void testMarkAndReset() throws Exception {
@@ -169,45 +161,16 @@ public class NullReaderTest {
     }
 
     @Test
-    public void testMarkNotSupported() throws Exception {
-        final Reader reader = new TestNullReader(100, false, true);
-        assertFalse("Mark Should NOT be Supported", reader.markSupported());
-
-        try {
-            reader.mark(5);
-            fail("mark() should throw UnsupportedOperationException");
-        } catch (final UnsupportedOperationException e) {
-            assertEquals("mark() error message",  "Mark not supported", e.getMessage());
-        }
-
-        try {
-            reader.reset();
-            fail("reset() should throw UnsupportedOperationException");
-        } catch (final UnsupportedOperationException e) {
-            assertEquals("reset() error message",  "Mark not supported", e.getMessage());
-        }
-        reader.close();
-    }
+	public void testMarkNotSupported() throws Exception {
+		NullTestTestMarkNotSupportedTemplate.nullTestTestMarkNotSupportedTemplate(
+				new NullReaderTestTestMarkNotSupportedAdapterImpl(), NullReaderTest.TestNullReader.class);
+	}
 
     @Test
-    public void testSkip() throws Exception {
-        final Reader reader = new TestNullReader(10, true, false);
-        assertEquals("Read 1", 0, reader.read());
-        assertEquals("Read 2", 1, reader.read());
-        assertEquals("Skip 1", 5, reader.skip(5));
-        assertEquals("Read 3", 7, reader.read());
-        assertEquals("Skip 2", 2, reader.skip(5)); // only 2 left to skip
-        assertEquals("Skip 3 (EOF)", -1, reader.skip(5)); // End of file
-        try {
-            reader.skip(5); //
-            fail("Expected IOException for skipping after end of file");
-        } catch (final IOException e) {
-            assertEquals("Skip after EOF IOException message",
-                    "Skip after end of file",
-                    e.getMessage());
-        }
-        reader.close();
-    }
+	public void testSkip() throws Exception {
+		NullTestTestSkipTemplate.nullTestTestSkipTemplate(new NullReaderTestTestSkipAdapterImpl(),
+				NullReaderTest.TestNullReader.class);
+	}
 
 
     // ------------- Test NullReader implementation -------------
@@ -232,4 +195,49 @@ public class NullReaderTest {
         }
 
     }
+
+
+	class NullReaderTestTestMarkNotSupportedAdapterImpl implements NullTestTestMarkNotSupportedAdapter<Reader> {
+		public boolean markSupported(Reader reader) {
+			return reader.markSupported();
+		}
+
+		public void mark(Reader reader, int i1) throws IOException {
+			reader.mark(i1);
+		}
+
+		public void reset(Reader reader) throws IOException {
+			reader.reset();
+		}
+
+		public void close(Reader reader) throws IOException {
+			reader.close();
+		}
+	}
+
+
+	class NullReaderTestTestSkipAdapterImpl implements NullTestTestSkipAdapter<Reader> {
+		public int read(Reader reader) throws IOException {
+			return reader.read();
+		}
+
+		public long skip(Reader reader, long l1) throws IOException {
+			return reader.skip(l1);
+		}
+
+		public void close(Reader reader) throws IOException {
+			reader.close();
+		}
+	}
+
+
+	class NullReaderTestTestEOFExceptionAdapterImpl implements NullTestTestEOFExceptionAdapter<Reader> {
+		public int read(Reader reader) throws IOException {
+			return reader.read();
+		}
+
+		public void close(Reader reader) throws IOException {
+			reader.close();
+		}
+	}
 }

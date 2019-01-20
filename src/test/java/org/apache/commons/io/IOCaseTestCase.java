@@ -16,6 +16,7 @@
  */
 package org.apache.commons.io;
 
+import java.lang.String;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -64,18 +65,14 @@ public class IOCaseTestCase extends FileBasedTestCase {
     }
 
     @Test
-    public void test_getName() throws Exception {
-        assertEquals("Sensitive", IOCase.SENSITIVE.getName());
-        assertEquals("Insensitive", IOCase.INSENSITIVE.getName());
-        assertEquals("System", IOCase.SYSTEM.getName());
-    }
+	public void test_getName() throws Exception {
+		this.ioCaseTestCaseTemplate(new IOCaseTestCaseTest_getNameAdapterImpl());
+	}
 
     @Test
-    public void test_toString() throws Exception {
-        assertEquals("Sensitive", IOCase.SENSITIVE.toString());
-        assertEquals("Insensitive", IOCase.INSENSITIVE.toString());
-        assertEquals("System", IOCase.SYSTEM.toString());
-    }
+	public void test_toString() throws Exception {
+		this.ioCaseTestCaseTemplate(new IOCaseTestCaseTest_toStringAdapterImpl());
+	}
 
     @Test
     public void test_isCaseSensitive() throws Exception {
@@ -379,5 +376,27 @@ public class IOCaseTestCase extends FileBasedTestCase {
         final ObjectInputStream in = new ObjectInputStream(bufin);
         return (IOCase) in.readObject();
     }
+
+	public void ioCaseTestCaseTemplate(IOCaseTestCaseAdapter adapter) throws Exception {
+		assertEquals("Sensitive", adapter.action1(IOCase.SENSITIVE));
+		assertEquals("Insensitive", adapter.action1(IOCase.INSENSITIVE));
+		assertEquals("System", adapter.action1(IOCase.SYSTEM));
+	}
+
+	interface IOCaseTestCaseAdapter {
+		String action1(IOCase iOCase1);
+	}
+
+	class IOCaseTestCaseTest_getNameAdapterImpl implements IOCaseTestCaseAdapter {
+		public String action1(IOCase iOCase1) {
+			return iOCase1.getName();
+		}
+	}
+
+	class IOCaseTestCaseTest_toStringAdapterImpl implements IOCaseTestCaseAdapter {
+		public String action1(IOCase iOCase1) {
+			return iOCase1.toString();
+		}
+	}
 
 }

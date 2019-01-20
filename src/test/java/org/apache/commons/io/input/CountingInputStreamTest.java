@@ -132,17 +132,9 @@ public class CountingInputStreamTest {
     }
 
     @Test
-    public void testZeroLength2() throws Exception {
-        final ByteArrayInputStream bais = new ByteArrayInputStream(new byte[0]);
-        final CountingInputStream cis = new CountingInputStream(bais);
-
-        final byte[] result = new byte[10];
-
-        final int found = cis.read(result);
-        assertEquals(-1, found);
-        assertEquals(0, cis.getCount());
-        cis.close();
-    }
+	public void testZeroLength2() throws Exception {
+		this.countingInputStreamTestTestTemplate(0, -1, 0);
+	}
 
     @Test
     public void testZeroLength3() throws Exception {
@@ -175,17 +167,9 @@ public class CountingInputStreamTest {
     }
 
     @Test
-    public void testEOF2() throws Exception {
-        final ByteArrayInputStream bais = new ByteArrayInputStream(new byte[2]);
-        final CountingInputStream cis = new CountingInputStream(bais);
-
-        final byte[] result = new byte[10];
-
-        final int found = cis.read(result);
-        assertEquals(2, found);
-        assertEquals(2, cis.getCount());
-        cis.close();
-    }
+	public void testEOF2() throws Exception {
+		this.countingInputStreamTestTestTemplate(2, 2, 2);
+	}
 
     @Test
     public void testEOF3() throws Exception {
@@ -216,5 +200,16 @@ public class CountingInputStreamTest {
         assertEquals(12,cis.getCount());
         cis.close();
     }
+
+
+	public void countingInputStreamTestTestTemplate(int i1, int i2, int i3) throws Exception {
+		final ByteArrayInputStream bais = new ByteArrayInputStream(new byte[i1]);
+		final CountingInputStream cis = new CountingInputStream(bais);
+		final byte[] result = new byte[10];
+		final int found = cis.read(result);
+		assertEquals(i2, found);
+		assertEquals(i3, cis.getCount());
+		cis.close();
+	}
 
 }

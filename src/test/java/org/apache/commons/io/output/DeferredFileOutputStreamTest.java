@@ -50,52 +50,20 @@ public class DeferredFileOutputStreamTest
     private final byte[] testBytes = testString.getBytes();
 
     /**
-     * Tests the case where the amount of data falls below the threshold, and
-     * is therefore confined to memory.
-     */
-    @Test
-    public void testBelowThreshold()
-    {
-        final DeferredFileOutputStream dfos =
-                new DeferredFileOutputStream(testBytes.length + 42, null);
-        try
-        {
-            dfos.write(testBytes, 0, testBytes.length);
-            dfos.close();
-        }
-        catch (final IOException e) {
-            fail("Unexpected IOException");
-        }
-        assertTrue(dfos.isInMemory());
-
-        final byte[] resultBytes = dfos.getData();
-        assertEquals(testBytes.length, resultBytes.length);
-        assertTrue(Arrays.equals(resultBytes, testBytes));
-    }
+	 * Tests the case where the amount of data falls below the threshold, and is therefore confined to memory.
+	 */
+	@Test
+	public void testBelowThreshold() {
+		this.deferredFileOutputStreamTestTestThresholdTemplate(testBytes.length + 42);
+	}
 
     /**
-     * Tests the case where the amount of data is exactly the same as the
-     * threshold. The behavior should be the same as that for the amount of
-     * data being below (i.e. not exceeding) the threshold.
-     */
-    @Test
-    public void testAtThreshold() {
-        final DeferredFileOutputStream dfos =
-                new DeferredFileOutputStream(testBytes.length, null);
-        try
-        {
-            dfos.write(testBytes, 0, testBytes.length);
-            dfos.close();
-        }
-        catch (final IOException e) {
-            fail("Unexpected IOException");
-        }
-        assertTrue(dfos.isInMemory());
-
-        final byte[] resultBytes = dfos.getData();
-        assertEquals(testBytes.length, resultBytes.length);
-        assertTrue(Arrays.equals(resultBytes, testBytes));
-    }
+	 * Tests the case where the amount of data is exactly the same as the threshold. The behavior should be the same as that for the amount of data being below (i.e. not exceeding) the threshold.
+	 */
+	@Test
+	public void testAtThreshold() {
+		this.deferredFileOutputStreamTestTestThresholdTemplate(testBytes.length);
+	}
 
     /**
      * Tests the case where the amount of data exceeds the threshold, and is
@@ -381,4 +349,18 @@ public class DeferredFileOutputStreamTest
             fail("Unexpected IOException");
         }
     }
+
+	public void deferredFileOutputStreamTestTestThresholdTemplate(int i1) {
+		final DeferredFileOutputStream dfos = new DeferredFileOutputStream(i1, null);
+		try {
+			dfos.write(testBytes, 0, testBytes.length);
+			dfos.close();
+		} catch (final IOException e) {
+			fail("Unexpected IOException");
+		}
+		assertTrue(dfos.isInMemory());
+		final byte[] resultBytes = dfos.getData();
+		assertEquals(testBytes.length, resultBytes.length);
+		assertTrue(Arrays.equals(resultBytes, testBytes));
+	}
 }

@@ -55,75 +55,30 @@ public class BoundedReaderTest
     }
 
     @Test
-    public void readMulti() throws IOException {
-        BoundedReader mr = new BoundedReader( sr, 3 );
-        char[] cbuf = new char[4];
-        for ( int i = 0; i < cbuf.length; i++ )
-        {
-            cbuf[i] = 'X';
-        }
-        final int read = mr.read( cbuf, 0, 4 );
-        assertEquals( 3, read );
-        assertEquals( '0', cbuf[0] );
-        assertEquals( '1', cbuf[1] );
-        assertEquals( '2', cbuf[2] );
-        assertEquals( 'X', cbuf[3] );
-        mr.close();
-    }
+	public void readMulti() throws Exception {
+		this.boundedReaderTestReadMultiTemplate(0, 4, 3, '0', '1', '2');
+	}
 
     @Test
-    public void readMultiWithOffset() throws IOException {
-        BoundedReader mr = new BoundedReader( sr, 3 );
-        char[] cbuf = new char[4];
-        for ( int i = 0; i < cbuf.length; i++ ) {
-            cbuf[i] = 'X';
-        }
-        final int read = mr.read( cbuf, 1, 2 );
-        assertEquals( 2, read );
-        assertEquals( 'X', cbuf[0] );
-        assertEquals( '0', cbuf[1] );
-        assertEquals( '1', cbuf[2] );
-        assertEquals( 'X', cbuf[3] );
-        mr.close();
-    }
+	public void readMultiWithOffset() throws Exception {
+		this.boundedReaderTestReadMultiTemplate(1, 2, 2, 'X', '0', '1');
+	}
 
     @Test
-    public void markReset() throws IOException {
-        BoundedReader mr = new BoundedReader( sr, 3 );
-        mr.mark( 3 );
-        mr.read();
-        mr.read();
-        mr.read();
-        mr.reset();
-        mr.read();
-        mr.read();
-        mr.read();
-        assertEquals( -1, mr.read() );
-        mr.close();
-    }
+	public void markReset() throws Exception {
+		this.boundedReaderTestMarkResetMarkTemplate(3);
+	}
 
 
     @Test
-    public void markResetWithMarkOutsideBoundedReaderMax() throws IOException {
-        BoundedReader mr = new BoundedReader( sr, 3 );
-        mr.mark( 4 );
-        mr.read();
-        mr.read();
-        mr.read();
-        assertEquals( -1, mr.read() );
-        mr.close();
-    }
+	public void markResetWithMarkOutsideBoundedReaderMax() throws Exception {
+		this.boundedReaderTestMarkResetWithMarkOutsideBoundedReaderMaxTemplate(4);
+	}
 
     @Test
-    public void markResetWithMarkOutsideBoundedReaderMaxAndInitialOffset() throws IOException {
-        BoundedReader mr = new BoundedReader( sr, 3 );
-        mr.read();
-        mr.mark( 3 );
-        mr.read();
-        mr.read();
-        assertEquals( -1, mr.read() );
-        mr.close();
-    }
+	public void markResetWithMarkOutsideBoundedReaderMaxAndInitialOffset() throws Exception {
+		this.boundedReaderTestMarkResetWithMarkOutsideBoundedReaderMaxTemplate(3);
+	}
 
     @Test
     public void markResetFromOffset1() throws IOException {
@@ -141,19 +96,9 @@ public class BoundedReaderTest
     }
 
     @Test
-    public void markResetMarkMore() throws IOException {
-        BoundedReader mr = new BoundedReader( sr, 3 );
-        mr.mark( 4 );
-        mr.read();
-        mr.read();
-        mr.read();
-        mr.reset();
-        mr.read();
-        mr.read();
-        mr.read();
-        assertEquals( -1, mr.read() );
-        mr.close();
-    }
+	public void markResetMarkMore() throws Exception {
+		this.boundedReaderTestMarkResetMarkTemplate(4);
+	}
 
     @Test
     public void skipTest() throws IOException {
@@ -181,4 +126,43 @@ public class BoundedReaderTest
         mr.close();
         assertTrue( closed.get() );
     }
+
+	public void boundedReaderTestReadMultiTemplate(int i1, int i2, int i3, char c1, char c2, char c3) throws Exception {
+		BoundedReader mr = new BoundedReader(sr, 3);
+		char[] cbuf = new char[4];
+		for (int i = 0; i < cbuf.length; i++) {
+			cbuf[i] = 'X';
+		}
+		final int read = mr.read(cbuf, i1, i2);
+		assertEquals(i3, read);
+		assertEquals(c1, cbuf[0]);
+		assertEquals(c2, cbuf[1]);
+		assertEquals(c3, cbuf[2]);
+		assertEquals('X', cbuf[3]);
+		mr.close();
+	}
+
+	public void boundedReaderTestMarkResetMarkTemplate(int i1) throws Exception {
+		BoundedReader mr = new BoundedReader(sr, 3);
+		mr.mark(i1);
+		mr.read();
+		mr.read();
+		mr.read();
+		mr.reset();
+		mr.read();
+		mr.read();
+		mr.read();
+		assertEquals(-1, mr.read());
+		mr.close();
+	}
+
+	public void boundedReaderTestMarkResetWithMarkOutsideBoundedReaderMaxTemplate(int i1) throws Exception {
+		BoundedReader mr = new BoundedReader(sr, 3);
+		mr.mark(i1);
+		mr.read();
+		mr.read();
+		mr.read();
+		assertEquals(-1, mr.read());
+		mr.close();
+	}
 }

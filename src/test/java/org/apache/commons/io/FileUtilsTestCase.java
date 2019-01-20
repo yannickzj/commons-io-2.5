@@ -16,6 +16,7 @@
  */
 package org.apache.commons.io;
 
+import java.io.File;
 import org.apache.commons.io.filefilter.NameFileFilter;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.io.testtools.FileBasedTestCase;
@@ -1594,22 +1595,14 @@ public class FileUtilsTestCase extends FileBasedTestCase {
     // forceDelete
 
     @Test
-    public void testForceDeleteAFile1() throws Exception {
-        final File destination = new File(getTestDirectory(), "copy1.txt");
-        destination.createNewFile();
-        assertTrue("Copy1.txt doesn't exist to delete", destination.exists());
-        FileUtils.forceDelete(destination);
-        assertTrue("Check No Exist", !destination.exists());
-    }
+	public void testForceDeleteAFile1() throws Exception {
+		this.fileUtilsTestCaseTestForceDeleteATemplate("copy1.txt", "Copy1.txt doesn't exist to delete");
+	}
 
     @Test
-    public void testForceDeleteAFile2() throws Exception {
-        final File destination = new File(getTestDirectory(), "copy2.txt");
-        destination.createNewFile();
-        assertTrue("Copy2.txt doesn't exist to delete", destination.exists());
-        FileUtils.forceDelete(destination);
-        assertTrue("Check No Exist", !destination.exists());
-    }
+	public void testForceDeleteAFile2() throws Exception {
+		this.fileUtilsTestCaseTestForceDeleteATemplate("copy2.txt", "Copy2.txt doesn't exist to delete");
+	}
 
     @Test
     public void testForceDeleteAFile3() throws Exception {
@@ -2089,35 +2082,16 @@ public class FileUtilsTestCase extends FileBasedTestCase {
     }
 
     @Test
-    public void testWriteLines_5argsWithAppendOptionTrue_ShouldNotDeletePreviousFileLines() throws Exception {
-        final File file = TestUtils.newFile(getTestDirectory(), "lines.txt");
-        FileUtils.writeStringToFile(file, "This line was there before you...");
-
-        final List<String> linesToAppend = Arrays.asList("my first line", "The second Line");
-        FileUtils.writeLines(file, null, linesToAppend, null, true);
-
-        final String expected = "This line was there before you..."
-                + "my first line"
-                + IOUtils.LINE_SEPARATOR + "The second Line"
-                + IOUtils.LINE_SEPARATOR;
-        final String actual = FileUtils.readFileToString(file);
-        assertEquals(expected, actual);
-    }
+	public void testWriteLines_5argsWithAppendOptionTrue_ShouldNotDeletePreviousFileLines() throws Exception {
+		this.fileUtilsTestCaseTestWriteLines_5argsWithAppendOptionShouldDeletePreviousFileLinesTemplate(true,
+				"This line was there before you..." + "my first line");
+	}
 
     @Test
-    public void testWriteLines_5argsWithAppendOptionFalse_ShouldDeletePreviousFileLines() throws Exception {
-        final File file = TestUtils.newFile(getTestDirectory(), "lines.txt");
-        FileUtils.writeStringToFile(file, "This line was there before you...");
-
-        final List<String> linesToAppend = Arrays.asList("my first line", "The second Line");
-        FileUtils.writeLines(file, null, linesToAppend, null, false);
-
-        final String expected = "my first line"
-                + IOUtils.LINE_SEPARATOR + "The second Line"
-                + IOUtils.LINE_SEPARATOR;
-        final String actual = FileUtils.readFileToString(file);
-        assertEquals(expected, actual);
-    }
+	public void testWriteLines_5argsWithAppendOptionFalse_ShouldDeletePreviousFileLines() throws Exception {
+		this.fileUtilsTestCaseTestWriteLines_5argsWithAppendOptionShouldDeletePreviousFileLinesTemplate(false,
+				"my first line");
+	}
 
     @Test
     public void testWriteLines_4argsWithAppendOptionTrue_ShouldNotDeletePreviousFileLines() throws Exception {
@@ -2183,35 +2157,16 @@ public class FileUtilsTestCase extends FileBasedTestCase {
     }
 
     @Test
-    public void testWriteLines_3argsWithAppendOptionTrue_ShouldNotDeletePreviousFileLines() throws Exception {
-        final File file = TestUtils.newFile(getTestDirectory(), "lines.txt");
-        FileUtils.writeStringToFile(file, "This line was there before you...");
-
-        final List<String> linesToAppend = Arrays.asList("my first line", "The second Line");
-        FileUtils.writeLines(file, linesToAppend, true);
-
-        final String expected = "This line was there before you..."
-                + "my first line"
-                + IOUtils.LINE_SEPARATOR + "The second Line"
-                + IOUtils.LINE_SEPARATOR;
-        final String actual = FileUtils.readFileToString(file);
-        assertEquals(expected, actual);
-    }
+	public void testWriteLines_3argsWithAppendOptionTrue_ShouldNotDeletePreviousFileLines() throws Exception {
+		this.fileUtilsTestCaseTestWriteLines_3argsWithAppendOptionShouldDeletePreviousFileLinesTemplate(true,
+				"This line was there before you..." + "my first line");
+	}
 
     @Test
-    public void testWriteLines_3argsWithAppendOptionFalse_ShouldDeletePreviousFileLines() throws Exception {
-        final File file = TestUtils.newFile(getTestDirectory(), "lines.txt");
-        FileUtils.writeStringToFile(file, "This line was there before you...");
-
-        final List<String> linesToAppend = Arrays.asList("my first line", "The second Line");
-        FileUtils.writeLines(file, linesToAppend, false);
-
-        final String expected = "my first line"
-                + IOUtils.LINE_SEPARATOR + "The second Line"
-                + IOUtils.LINE_SEPARATOR;
-        final String actual = FileUtils.readFileToString(file);
-        assertEquals(expected, actual);
-    }
+	public void testWriteLines_3argsWithAppendOptionFalse_ShouldDeletePreviousFileLines() throws Exception {
+		this.fileUtilsTestCaseTestWriteLines_3argsWithAppendOptionShouldDeletePreviousFileLinesTemplate(false,
+				"my first line");
+	}
 
     @Test
     public void testWriteStringToFileWithEncoding_WithAppendOptionTrue_ShouldNotDeletePreviousFileLines() throws Exception {
@@ -2670,58 +2625,10 @@ public class FileUtilsTestCase extends FileBasedTestCase {
     }
 
     @Test
-    public void testMoveFileToDirectory_Errors() throws Exception {
-        try {
-            FileUtils.moveFileToDirectory(null, new File("foo"), true);
-            fail("Expected NullPointerException when source is null");
-        } catch (final NullPointerException e) {
-            // expected
-        }
-        try {
-            FileUtils.moveFileToDirectory(new File("foo"), null, true);
-            fail("Expected NullPointerException when destination is null");
-        } catch (final NullPointerException e) {
-            // expected
-        }
-        final File testFile1 = new File(getTestDirectory(), "testMoveFileFile1");
-        final File testFile2 = new File(getTestDirectory(), "testMoveFileFile2");
-        if (!testFile1.getParentFile().exists()) {
-            throw new IOException("Cannot create file " + testFile1
-                    + " as the parent directory does not exist");
-        }
-        final BufferedOutputStream output1 =
-                new BufferedOutputStream(new FileOutputStream(testFile1));
-        try {
-            TestUtils.generateTestData(output1, (long) 0);
-        } finally {
-            IOUtils.closeQuietly(output1);
-        }
-        if (!testFile2.getParentFile().exists()) {
-            throw new IOException("Cannot create file " + testFile2
-                    + " as the parent directory does not exist");
-        }
-        final BufferedOutputStream output =
-                new BufferedOutputStream(new FileOutputStream(testFile2));
-        try {
-            TestUtils.generateTestData(output, (long) 0);
-        } finally {
-            IOUtils.closeQuietly(output);
-        }
-        try {
-            FileUtils.moveFileToDirectory(testFile1, testFile2, true);
-            fail("Expected IOException when dest not a directory");
-        } catch (final IOException e) {
-            // expected
-        }
-
-        final File nonexistant = new File(getTestDirectory(), "testMoveFileNonExistant");
-        try {
-            FileUtils.moveFileToDirectory(testFile1, nonexistant, false);
-            fail("Expected IOException when dest does not exist and create=false");
-        } catch (final IOException e) {
-            // expected
-        }
-    }
+	public void testMoveFileToDirectory_Errors() throws Exception {
+		this.fileUtilsTestCaseTestMoveToDirectory_ErrorsTemplate(
+				new FileUtilsTestCaseTestMoveFileToDirectory_ErrorsAdapterImpl());
+	}
 
 
     @Test
@@ -2887,58 +2794,10 @@ public class FileUtilsTestCase extends FileBasedTestCase {
     }
 
     @Test
-    public void testMoveDirectoryToDirectory_Errors() throws Exception {
-        try {
-            FileUtils.moveDirectoryToDirectory(null, new File("foo"), true);
-            fail("Expected NullPointerException when source is null");
-        } catch (final NullPointerException e) {
-            // expected
-        }
-        try {
-            FileUtils.moveDirectoryToDirectory(new File("foo"), null, true);
-            fail("Expected NullPointerException when destination is null");
-        } catch (final NullPointerException e) {
-            // expected
-        }
-        final File testFile1 = new File(getTestDirectory(), "testMoveFileFile1");
-        final File testFile2 = new File(getTestDirectory(), "testMoveFileFile2");
-        if (!testFile1.getParentFile().exists()) {
-            throw new IOException("Cannot create file " + testFile1
-                    + " as the parent directory does not exist");
-        }
-        final BufferedOutputStream output1 =
-                new BufferedOutputStream(new FileOutputStream(testFile1));
-        try {
-            TestUtils.generateTestData(output1, (long) 0);
-        } finally {
-            IOUtils.closeQuietly(output1);
-        }
-        if (!testFile2.getParentFile().exists()) {
-            throw new IOException("Cannot create file " + testFile2
-                    + " as the parent directory does not exist");
-        }
-        final BufferedOutputStream output =
-                new BufferedOutputStream(new FileOutputStream(testFile2));
-        try {
-            TestUtils.generateTestData(output, (long) 0);
-        } finally {
-            IOUtils.closeQuietly(output);
-        }
-        try {
-            FileUtils.moveDirectoryToDirectory(testFile1, testFile2, true);
-            fail("Expected IOException when dest not a directory");
-        } catch (final IOException e) {
-            // expected
-        }
-
-        final File nonexistant = new File(getTestDirectory(), "testMoveFileNonExistant");
-        try {
-            FileUtils.moveDirectoryToDirectory(testFile1, nonexistant, false);
-            fail("Expected IOException when dest does not exist and create=false");
-        } catch (final IOException e) {
-            // expected
-        }
-    }
+	public void testMoveDirectoryToDirectory_Errors() throws Exception {
+		this.fileUtilsTestCaseTestMoveToDirectory_ErrorsTemplate(
+				new FileUtilsTestCaseTestMoveDirectoryToDirectory_ErrorsAdapterImpl());
+	}
 
     @Test
     public void testMoveToDirectory() throws Exception {
@@ -3081,5 +2940,98 @@ public class FileUtilsTestCase extends FileBasedTestCase {
             results.add(file);
         }
     }
+
+	public void fileUtilsTestCaseTestMoveToDirectory_ErrorsTemplate(
+			FileUtilsTestCaseTestMoveToDirectory_ErrorsAdapter adapter) throws Exception {
+		try {
+			adapter.moveDirectoryToDirectory(null, new File("foo"), true);
+			fail("Expected NullPointerException when source is null");
+		} catch (final NullPointerException e) {
+		}
+		try {
+			adapter.moveDirectoryToDirectory(new File("foo"), null, true);
+			fail("Expected NullPointerException when destination is null");
+		} catch (final NullPointerException e) {
+		}
+		final File testFile1 = new File(getTestDirectory(), "testMoveFileFile1");
+		final File testFile2 = new File(getTestDirectory(), "testMoveFileFile2");
+		if (!testFile1.getParentFile().exists()) {
+			throw new IOException("Cannot create file " + testFile1 + " as the parent directory does not exist");
+		}
+		final BufferedOutputStream output1 = new BufferedOutputStream(new FileOutputStream(testFile1));
+		try {
+			TestUtils.generateTestData(output1, (long) 0);
+		} finally {
+			IOUtils.closeQuietly(output1);
+		}
+		if (!testFile2.getParentFile().exists()) {
+			throw new IOException("Cannot create file " + testFile2 + " as the parent directory does not exist");
+		}
+		final BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(testFile2));
+		try {
+			TestUtils.generateTestData(output, (long) 0);
+		} finally {
+			IOUtils.closeQuietly(output);
+		}
+		try {
+			adapter.moveDirectoryToDirectory(testFile1, testFile2, true);
+			fail("Expected IOException when dest not a directory");
+		} catch (final IOException e) {
+		}
+		final File nonexistant = new File(getTestDirectory(), "testMoveFileNonExistant");
+		try {
+			adapter.moveDirectoryToDirectory(testFile1, nonexistant, false);
+			fail("Expected IOException when dest does not exist and create=false");
+		} catch (final IOException e) {
+		}
+	}
+
+	interface FileUtilsTestCaseTestMoveToDirectory_ErrorsAdapter {
+		void moveDirectoryToDirectory(File file1, File file2, boolean b1) throws IOException;
+	}
+
+	class FileUtilsTestCaseTestMoveFileToDirectory_ErrorsAdapterImpl
+			implements FileUtilsTestCaseTestMoveToDirectory_ErrorsAdapter {
+		public void moveDirectoryToDirectory(File file1, File file2, boolean b1) throws IOException {
+			FileUtils.moveFileToDirectory(file1, file2, b1);
+		}
+	}
+
+	class FileUtilsTestCaseTestMoveDirectoryToDirectory_ErrorsAdapterImpl
+			implements FileUtilsTestCaseTestMoveToDirectory_ErrorsAdapter {
+		public void moveDirectoryToDirectory(File file1, File file2, boolean b1) throws IOException {
+			FileUtils.moveDirectoryToDirectory(file1, file2, b1);
+		}
+	}
+
+	public void fileUtilsTestCaseTestWriteLines_5argsWithAppendOptionShouldDeletePreviousFileLinesTemplate(boolean b1,
+			String string1) throws Exception {
+		final File file = TestUtils.newFile(getTestDirectory(), "lines.txt");
+		FileUtils.writeStringToFile(file, "This line was there before you...");
+		final List<String> linesToAppend = Arrays.asList("my first line", "The second Line");
+		FileUtils.writeLines(file, null, linesToAppend, null, b1);
+		final String expected = string1 + IOUtils.LINE_SEPARATOR + "The second Line" + IOUtils.LINE_SEPARATOR;
+		final String actual = FileUtils.readFileToString(file);
+		assertEquals(expected, actual);
+	}
+
+	public void fileUtilsTestCaseTestWriteLines_3argsWithAppendOptionShouldDeletePreviousFileLinesTemplate(boolean b1,
+			String string1) throws Exception {
+		final File file = TestUtils.newFile(getTestDirectory(), "lines.txt");
+		FileUtils.writeStringToFile(file, "This line was there before you...");
+		final List<String> linesToAppend = Arrays.asList("my first line", "The second Line");
+		FileUtils.writeLines(file, linesToAppend, b1);
+		final String expected = string1 + IOUtils.LINE_SEPARATOR + "The second Line" + IOUtils.LINE_SEPARATOR;
+		final String actual = FileUtils.readFileToString(file);
+		assertEquals(expected, actual);
+	}
+
+	public void fileUtilsTestCaseTestForceDeleteATemplate(String string1, String string2) throws Exception {
+		final File destination = new File(getTestDirectory(), string1);
+		destination.createNewFile();
+		assertTrue(string2, destination.exists());
+		FileUtils.forceDelete(destination);
+		assertTrue("Check No Exist", !destination.exists());
+	}
 
 }
